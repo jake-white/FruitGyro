@@ -1,4 +1,4 @@
-let game, game, basket, accelerometer;
+let game, basket, accelerometer;
 
 // A $( document ).ready() block.
 $( document ).ready(function() {
