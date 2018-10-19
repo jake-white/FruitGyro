@@ -11,7 +11,7 @@ let active_fruits = [];
 let fruit_timer;
 let score = 0, best = 0;
 let acorns = 0;
-let paused = false;
+let paused = false, gameovered = false;
 
 let FruitTypes = {
     APPLE: 0,
@@ -56,11 +56,13 @@ $( document ).ready(function() {
     fruit_timer = new Timer();
     fruit_timer.reset();
     game.canvas.addEventListener("click", tap, false);
+    window.onfocus = play;
+    window.onblur = pause;
     game.start();
 });
 
 function update() {
-    if(fruit_timer.getElapsedTime() > nextDroppedFruit && !paused) {
+    if(fruit_timer.getElapsedTime() > nextDroppedFruit && !paused && !gameovered) {
         let randomType = Math.floor(Math.random() * 6);
         let newFruit = new Fruit(randomType);
         active_fruits.push(newFruit);
@@ -86,6 +88,7 @@ function update() {
                 acorns++;
                 checkGameState();
             }
+            document.getElementById('pickup').play();
             score+=FruitTypes.attributes[active_fruits[i].type].value;
             active_fruits.splice(i, 1);
         }
@@ -112,13 +115,20 @@ function Fruit(type) {
 }
 
 function tap() {
-    if(paused) {
+    if(gameovered) {
         acorns = 0;
         score = 0;
-        paused = false;
+        gameovered = false;
         gameover.hide();
     }
-    console.log("Click");
+}
+
+function pause() {
+    paused = true;
+}
+
+function play() {
+    paused = false;
 }
 
 function checkGameState() {
@@ -127,7 +137,7 @@ function checkGameState() {
             best = score;
             localStorage.setItem('best', best);
         }
-        paused = true;
+        gameovered = true;
         gameover.show();
     }
 }
