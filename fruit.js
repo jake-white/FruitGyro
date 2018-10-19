@@ -21,12 +21,12 @@ let FruitTypes = {
     PEACH: 4,
     ACORN: 5,
     attributes: {
-        0: {file: "apple.png", value: 1},
-        1: {file: "cherry.png", value: 2},
-        2: {file: "banana.png", value: 2},
-        3: {file: "orange.png", value: 3},
-        4: {file: "peach.png", value: 3},
-        5: {file: "acorn.png", value: 0},
+        0: {file: "assets/apple.png", value: 1},
+        1: {file: "assets/cherry.png", value: 2},
+        2: {file: "assets/banana.png", value: 2},
+        3: {file: "assets/orange.png", value: 3},
+        4: {file: "assets/peach.png", value: 3},
+        5: {file: "assets/acorn.png", value: 0},
     }
 }
 
@@ -35,14 +35,14 @@ $( document ).ready(function() {
     if(best == null) best = 0;
     game = new Scene();
     game.setSize(900, 1600);
-    basket = new Sprite(game, "basket.png", 400, 400);
+    basket = new Sprite(game, "assets/basket.png", 400, 400);
     basket.setPosition(game.width/2, game.height-basket.height/2);
     basket.setBoundAction(STOP);
     basket.setDX(0);
-    scoreDisplay = new Sprite(game, "score.png", 400, 400);
+    scoreDisplay = new Sprite(game, "assets/score.png", 400, 400);
     scoreDisplay.setPosition(game.width - 200, 200);
     scoreDisplay.setDX(0);
-    gameover = new Sprite(game, "gameover.png", 500, 500);
+    gameover = new Sprite(game, "assets/gameover.png", 500, 500);
     gameover.setPosition(game.width/2, game.height/2);
     gameover.setDX(0);
     gameover.hide();
@@ -79,7 +79,7 @@ function update() {
         active_fruits[i].update();
         let dy = active_fruits[i].dy + 1;
         active_fruits[i].setDY(dy);
-        if(active_fruits[i].distanceTo(basket) < active_fruits[i].width*1.5) {
+        if(active_fruits[i].distanceTo(basket) < active_fruits[i].width*0.9) {
             //collided
             active_fruits[i].hide();
             if(active_fruits[i].type == FruitTypes.ACORN) {
@@ -101,8 +101,8 @@ function Fruit(type) {
     let fruit = new Sprite(game, FruitTypes.attributes[type].file, 100, 100);
     fruit.type = type;
     if(fruit.type == FruitTypes.ACORN) {
-        fruit.width = 200;
-        fruit.height = 200;
+        fruit.width = 170;
+        fruit.height = 170;
     }
     fruit.setPosition(Math.random()*game.width, 50);
     fruit.setDX(0);
@@ -123,8 +123,10 @@ function tap() {
 
 function checkGameState() {
     if(acorns >= 3) {
-        best = score;
-        localStorage.setItem('best', best);
+        if(score > best) {
+            best = score;
+            localStorage.setItem('best', best);
+        }
         paused = true;
         gameover.show();
     }
@@ -135,7 +137,7 @@ function Basket() {
 }
 
 function Background() {
-    let bg = new Sprite(game, "background.png", game.width, game.height);
+    let bg = new Sprite(game, "assets/background.png", game.width, game.height);
     bg.setPosition(game.width/2, game.height/2);
     bg.setDX(0);
     bg.setDY(0);
