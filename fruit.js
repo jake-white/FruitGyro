@@ -1,10 +1,17 @@
-let game, basket, accelerometer;
+//fruit.js
+//pretty much all the game code is here
+
+let game, basket, scoreDisplay, gameover, accelerometer, ctx;
 let width = window.innerWidth;
 let height = window.innerHeight;
 let friction = 2;
 let bg;
-let lastDroppedFruit = 0, nextDroppedFruit = 0, minDropTime = 1000, maxDropTime = 4000;
+let nextDroppedFruit = 0, minDropTime = 1, maxDropTime = 4;
 let active_fruits = [];
+let fruit_timer;
+let score = 0, best = 0;
+let acorns = 0;
+let paused = false;
 
 let FruitTypes = {
     APPLE: 0,
@@ -12,40 +19,57 @@ let FruitTypes = {
     BANANA: 2,
     ORANGE: 3,
     PEACH: 4,
+    ACORN: 5,
     attributes: {
         0: {file: "apple.png", value: 1},
         1: {file: "apple.png", value: 2},
         2: {file: "apple.png", value: 2},
         3: {file: "apple.png", value: 3},
         4: {file: "apple.png", value: 3},
+        5: {file: "acorn.png", value: 0},
     }
 }
 
-// A $( document ).ready() block.
 $( document ).ready(function() {
+    best = localStorage.getItem('best');
+    if(best == null) best = 0;
     game = new Scene();
     game.setSize(900, 1600);
-    basket = new Sprite(game, "basket.png", 300, 300);
+    basket = new Sprite(game, "basket.png", 400, 400);
     basket.setPosition(game.width/2, game.height-basket.height/2);
     basket.setBoundAction(STOP);
     basket.setDX(0);
+    scoreDisplay = new Sprite(game, "score.png", 400, 400);
+    scoreDisplay.setPosition(game.width - 200, 200);
+    scoreDisplay.setDX(0);
+    gameover = new Sprite(game, "gameover.png", 500, 500);
+    gameover.setPosition(game.width/2, game.height/2);
+    gameover.setDX(0);
+    gameover.hide();
     bg = new Background();
     accelerometer = new Accel();
-    game.canvas.getContext("2d").imageSmoothingEnabled= false;
+    ctx = game.canvas.getContext("2d");
+    ctx.imageSmoothingEnabled= false;
+    ctx.font = "50px Arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "white";
+    fruit_timer = new Timer();
+    fruit_timer.reset();
+    game.canvas.addEventListener("click", tap, false);
     game.start();
 });
 
 function update() {
-    if(Date.now() > lastDroppedFruit + nextDroppedFruit ) {
-        let randomType = Math.floor(Math.random() * 5);
+    if(fruit_timer.getElapsedTime() > nextDroppedFruit && !paused) {
+        let randomType = Math.floor(Math.random() * 6);
         let newFruit = new Fruit(randomType);
         active_fruits.push(newFruit);
-        lastDroppedFruit = Date.now();
         nextDroppedFruit = minDropTime + (maxDropTime - minDropTime)*Math.random();
+        fruit_timer.reset();
     }
     game.clear();
     let dx = basket.dx;
-    dx -= 5*accelerometer.getAX();
+    dx -= accelerometer.getAX();
     if(dx > 0) dx -= friction;
     else if(dx < 0) dx += friction;
 
@@ -55,20 +79,55 @@ function update() {
     basket.setDX(dx);
     bg.update();
     basket.update();
-    active_fruits.forEach(function(fruit) {
-        let dy = fruit.dy + 1;
-        fruit.setDY(dy);
-        fruit.update();
-    })
+    for(let i = 0; i < active_fruits.length; ++i) {
+        active_fruits[i].update();
+        let dy = active_fruits[i].dy + 1;
+        active_fruits[i].setDY(dy);
+        if(active_fruits[i].distanceTo(basket) < active_fruits[i].width*1.5) {
+            //collided
+            active_fruits[i].hide();
+            if(active_fruits[i].type == FruitTypes.ACORN) {
+                acorns++;
+                checkGameState();
+            }
+            score+=FruitTypes.attributes[active_fruits[i].type].value;
+            active_fruits.splice(i, 1);
+        }
+    }
+    scoreDisplay.update();
+    gameover.update();
+    ctx.fillText(acorns, 730, 80);
+    ctx.fillText(score, 730, 195);
+    ctx.fillText(best, 730, 315);
 }
 
 function Fruit(type) {
     let fruit = new Sprite(game, FruitTypes.attributes[type].file, 100, 100);
+    fruit.type = type;
     fruit.setPosition(Math.random()*game.width, 50);
     fruit.setDX(0);
-    fruit.setBoundAction(STOP);
+    fruit.setBoundAction(DIE);
     fruit.setDY(0);
     return fruit;
+}
+
+function tap() {
+    if(paused) {
+        acorns = 0;
+        score = 0;
+        paused = false;
+        gameover.hide();
+    }
+    console.log("Click");
+}
+
+function checkGameState() {
+    if(acorns >= 3) {
+        best = score;
+        localStorage.setItem('best', best);
+        paused = true;
+        gameover.show();
+    }
 }
 
 function Basket() {
