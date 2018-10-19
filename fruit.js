@@ -4,9 +4,9 @@
 let game, basket, scoreDisplay, gameover, accelerometer, ctx;
 let width = window.innerWidth;
 let height = window.innerHeight;
-let friction = 2;
+let friction = 3;
 let bg;
-let nextDroppedFruit = 0, minDropTime = 1, maxDropTime = 4;
+let nextDroppedFruit = 0, minDropTime = 0.5, maxDropTime = 1;
 let active_fruits = [];
 let fruit_timer;
 let score = 0, best = 0;
@@ -22,10 +22,10 @@ let FruitTypes = {
     ACORN: 5,
     attributes: {
         0: {file: "apple.png", value: 1},
-        1: {file: "apple.png", value: 2},
-        2: {file: "apple.png", value: 2},
-        3: {file: "apple.png", value: 3},
-        4: {file: "apple.png", value: 3},
+        1: {file: "cherry.png", value: 2},
+        2: {file: "banana.png", value: 2},
+        3: {file: "orange.png", value: 3},
+        4: {file: "peach.png", value: 3},
         5: {file: "acorn.png", value: 0},
     }
 }
@@ -69,7 +69,7 @@ function update() {
     }
     game.clear();
     let dx = basket.dx;
-    dx -= accelerometer.getAX();
+    dx -= 2*accelerometer.getAX();
     if(dx > 0) dx -= friction;
     else if(dx < 0) dx += friction;
 
