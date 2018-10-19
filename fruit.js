@@ -6,7 +6,7 @@ let width = window.innerWidth;
 let height = window.innerHeight;
 let friction = 3;
 let bg;
-let nextDroppedFruit = 0, minDropTime = 0.5, maxDropTime = 3.1, increaseDifficulty = 15;
+let nextDroppedFruit = 0, minDropTime = 0.3, maxDropTime = 3.1, increaseDifficulty = 15;
 let active_fruits = [];
 let fruit_timer, difficulty_timer;
 let score = 0, best = 0;
@@ -65,7 +65,14 @@ $( document ).ready(function() {
 
 function update() {
     if(fruit_timer.getElapsedTime() > nextDroppedFruit && !paused && !gameovered) {
-        let randomType = Math.floor(Math.random() * 6);
+        let fruitChance = Math.random();
+        let randomType = 0;
+        if(fruitChance <=  0.3) {
+            randomType = FruitTypes.ACORN;
+        }
+        else { 
+            randomType = Math.floor(Math.random() * 5);
+        }
         let newFruit = new Fruit(randomType);
         active_fruits.push(newFruit);
         nextDroppedFruit = minDropTime + (maxDropTime - minDropTime)*Math.random();
