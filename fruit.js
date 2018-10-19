@@ -72,6 +72,7 @@ function update() {
     game.clear();
     let dx = basket.dx;
     dx -= 2*accelerometer.getAX();
+    dx = checkKeys(dx);
     if(dx > 0) dx -= friction;
     else if(dx < 0) dx += friction;
     basket.setDX(dx);
@@ -121,6 +122,17 @@ function tap() {
         gameovered = false;
         gameover.hide();
     }
+}
+
+function checkKeys(dx) {    
+    if (keysDown[K_LEFT]){
+        dx -= 6;
+    }
+    if (keysDown[K_RIGHT]){
+        dx += 6;
+    }
+    console.log(dx);
+    return dx;
 }
 
 function pause() {
