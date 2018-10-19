@@ -73,7 +73,7 @@ function update() {
     if(dx > 0) dx -= friction;
     else if(dx < 0) dx += friction;
 
-    if(Math.abs(dx) < 0.5) {
+    if(Math.abs(dx) < 0.1) {
         dx = 0;
     }
     basket.setDX(dx);
@@ -104,6 +104,10 @@ function update() {
 function Fruit(type) {
     let fruit = new Sprite(game, FruitTypes.attributes[type].file, 100, 100);
     fruit.type = type;
+    if(fruit.type == FruitTypes.ACORN) {
+        fruit.width = 200;
+        fruit.height = 200;
+    }
     fruit.setPosition(Math.random()*game.width, 50);
     fruit.setDX(0);
     fruit.setBoundAction(DIE);
