@@ -6,9 +6,9 @@ let width = window.innerWidth;
 let height = window.innerHeight;
 let friction = 3;
 let bg;
-let nextDroppedFruit = 0, minDropTime = 0.5, maxDropTime = 1;
+let nextDroppedFruit = 0, minDropTime = 0.5, maxDropTime = 3.1, increaseDifficulty = 15;
 let active_fruits = [];
-let fruit_timer;
+let fruit_timer, difficulty_timer;
 let score = 0, best = 0;
 let acorns = 0;
 let paused = false, gameovered = false;
@@ -55,6 +55,8 @@ $( document ).ready(function() {
     ctx.fillStyle = "white";
     fruit_timer = new Timer();
     fruit_timer.reset();
+    difficulty_timer = new Timer();
+    difficulty_timer.reset();
     game.canvas.addEventListener("click", tap, false);
     window.onfocus = play;
     window.onblur = pause;
@@ -68,6 +70,10 @@ function update() {
         active_fruits.push(newFruit);
         nextDroppedFruit = minDropTime + (maxDropTime - minDropTime)*Math.random();
         fruit_timer.reset();
+    }
+    if(difficulty_timer.getElapsedTime() > increaseDifficulty && maxDropTime > 0.5 && !paused && !gameovered) {
+        maxDropTime -= 0.5;
+        difficulty_timer.reset();
     }
     game.clear();
     let dx = basket.dx;
@@ -119,6 +125,8 @@ function tap() {
     if(gameovered) {
         acorns = 0;
         score = 0;
+        minDropTime = 0.5;
+        maxDropTime = 3.1;
         gameovered = false;
         gameover.hide();
     }
