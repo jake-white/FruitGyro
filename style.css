@@ -9,9 +9,10 @@ html {
 }
 
 p {
+    color: white;
+    font-size: 25px;
     padding: 0;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0;
     display: block;
     text-align: center;
 }

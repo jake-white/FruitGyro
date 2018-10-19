@@ -72,10 +72,6 @@ function update() {
     dx -= 2*accelerometer.getAX();
     if(dx > 0) dx -= friction;
     else if(dx < 0) dx += friction;
-
-    if(Math.abs(dx) < 0.1) {
-        dx = 0;
-    }
     basket.setDX(dx);
     bg.update();
     basket.update();
